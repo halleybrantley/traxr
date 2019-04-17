@@ -1,3 +1,5 @@
+#' Rotate wind vector to downwind, crosswind, and vertical
+#' @export
 rotateUVW <- function(u, v, w){
   theta <-  atan2(mean(v, na.rm=TRUE),mean(u, na.rm=TRUE))
   u_rot1 <- u*cos(theta) + v*sin(theta)

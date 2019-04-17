@@ -1,3 +1,5 @@
+#' Get backward trajectories
+#' @export
 getTraj <- function(sigmaU, sigmaV, sigmaW, ustar, ubar, flux, L, u, v, w, nTraj,
                     outSteps, height_sens, MaxFetch=3000){
 
