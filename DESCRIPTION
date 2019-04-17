@@ -15,5 +15,5 @@ RoxygenNote: 6.1.1
 LinkingTo: 
     Rcpp
 Imports: 
-    Rcpp
+    Rcpp, splines
 Suggests: geoR, raster
