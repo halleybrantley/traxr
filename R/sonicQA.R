@@ -1,3 +1,8 @@
+#' Remove Spikes from Sonic Data
+#' @description Used to remove sharp jumps in sonic data
+#' @param spod data.frame with SPod data
+#' @param nodes vector of letters with spod nodes
+#' @export
 sonicQA <- function(spod, nodes){
   spodQA <- spod
   for (node in nodes){
