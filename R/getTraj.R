@@ -1,7 +1,7 @@
 #' Get backward trajectories
 #' @export
 getTraj <- function(sigmaU, sigmaV, sigmaW, ustar, ubar, flux, L, u, v, w, nTraj,
-                    outSteps, height_sens, MaxFetch=3000){
+                    distThresh, height_sens, MaxFetch=3000){
 
   zSens <- height_sens
   ustar2 <- ustar^2
@@ -19,7 +19,7 @@ getTraj <- function(sigmaU, sigmaV, sigmaW, ustar, ubar, flux, L, u, v, w, nTraj
   alpha <- .02
   uv <- rotateUV(u, v)
   Zo <- exp(optimize(z0_obj, ubar=ubar, ustar=ustar, L=L, z = zSens, d=.1,
-                     interval = c(-20, 20))$minimum)
+                     interval = c(-5, 2))$minimum)
   Sigma <- matrix(c(sigmaU, 0, -ustar2, 0, sigmaV, 0, -ustar2, 0, sigmaW),
                   nrow=3)
   Sigma_sqrt <- t(chol(Sigma))
@@ -30,7 +30,8 @@ getTraj <- function(sigmaU, sigmaV, sigmaW, ustar, ubar, flux, L, u, v, w, nTraj
                       wind_mat[,3],
                       zSens, ustar, L, Zo,
                       bw, sigmaUu, sigmaVu,
-                      kv=0.4, C0, alpha=alpha, MaxFetch, outSteps)
+                      kv=0.4, C0, alpha=alpha, MaxFetch,
+                      distThresh=distThresh)
 
 
   traj <- data.frame(time = output$TimeOut, ID = output$Traj_IDOut,

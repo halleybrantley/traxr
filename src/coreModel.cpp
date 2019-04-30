@@ -16,7 +16,7 @@ Rcpp::List csFs(std::vector<double> uIn,
                 const double& C0In,
                 const double& alphaIn,
                 const double& MaxFetchIn,
-                int outSteps)
+                int distThresh)
 	{
 	Rcpp::RNGScope scope;
 
@@ -42,7 +42,7 @@ Rcpp::List csFs(std::vector<double> uIn,
 	const double alpha2sW2 = alphaIn*2.0*sigmaW2;
 	const double bisqdT = std::sqrt(alpha2sW2);
 	double Time, u, v, w, x, y, z, U, dUdz, bsquare, deltaT, deltaXx, deltaXy, deltaXz, fracZ;
-
+  double dist;
 
 	const int N = uIn.size();
 	//const int frac = (int)floor(N/10);
@@ -51,6 +51,7 @@ Rcpp::List csFs(std::vector<double> uIn,
 	for(int ID = 0; ID < N; ID++){
 		x = 0.0;
 		y = 0.0;
+		dist = 0.0;
 		z = ZIn;
 		u = uIn[ID];
 		v = vIn[ID];
@@ -84,13 +85,15 @@ Rcpp::List csFs(std::vector<double> uIn,
 				x += deltaXx*fracZ;
 				y += deltaXy*fracZ;
 				Time += deltaT*fracZ;
-
+				//dist += sqrt(pow(deltaXx*fracZ,2) + pow(deltaXy*fracZ,2));
 				u = 2.0*U - u;
 				v = -v;
 				w = -w;
 
 				x += u*deltaT*(1.0 - fracZ);
 				y -= deltaXy*(1.0 - fracZ);
+				//dist += sqrt(pow(u*deltaT*(1.0 - fracZ),2) +
+				  // pow(deltaXy*(1.0 - fracZ),2));
 				z += 2.0*(ZoIn - z) - deltaXz;
 				Time += deltaT*(1.0 - fracZ);
 			} else {
@@ -98,8 +101,11 @@ Rcpp::List csFs(std::vector<double> uIn,
 				y += deltaXy;
 				z += deltaXz;
 				Time += deltaT;
+				dist += sqrt(pow(deltaXx,2) + pow(deltaXy,2));
 			}
-    if (j % outSteps == 0){
+    if (dist > distThresh){
+      //Rprintf("%f \n", dist);
+      dist = 0;
 			IDOut.push_back(ID);
 			xOut.push_back(x);
 			yOut.push_back(y);
@@ -140,7 +146,7 @@ Rcpp::List csFi(std::vector<double> uIn,
                 const double& C0In,
                 const double& alphaIn,
                 const double& MaxFetchIn,
-                int outSteps)
+                int distThresh)
 	{
 	Rcpp::RNGScope scope;
 
@@ -169,7 +175,7 @@ Rcpp::List csFi(std::vector<double> uIn,
 	double Time, u, v, w, x, y, z, zL, xi, xi2, psiM, phiE, dsW2dz, sigmaW2;
 	double s2inv, U, dUdz, powW, bsquare, deltaT, bisqdT;
 	double deltaXx, deltaXy, deltaXz, fracZ;
-
+  double dist = 0;
 
 	const int N = uIn.size();
 	// const int frac = (int)floor(uIn.size()/10);
@@ -179,6 +185,7 @@ Rcpp::List csFi(std::vector<double> uIn,
 	for(int ID = 0; ID < N; ID++){
 		x = 0.0;
 		y = 0.0;
+		dist = 0.0;
 		z = ZIn;
 		u = uIn[ID];
 		v = vIn[ID];
@@ -240,8 +247,11 @@ Rcpp::List csFi(std::vector<double> uIn,
 				y += deltaXy;
 				z += deltaXz;
 				Time += deltaT;
+				dist += sqrt(pow(deltaXx,2) + pow(deltaXy,2));
 			}
-      if (j % outSteps == 0){
+      if (dist > distThresh){
+        //Rprintf("\n %f", dist);
+        dist = 0.0;
   			IDOut.push_back(ID);
   			xOut.push_back(x);
   			yOut.push_back(y);
